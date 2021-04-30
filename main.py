@@ -3,13 +3,13 @@ from os.path import isdir
 from mpl_toolkits import mplot3d
 import pandas as pd
 import matplotlib
-matplotlib.use('TkAgg')
+#matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
 import numpy as np
 from scipy.stats import multivariate_normal
 
-GRID_SIZE = 1.5
+GRID_SIZE = 4
 GRID_FACTOR = 1000
 
 
@@ -36,6 +36,7 @@ def generate_costmaps_for_environment(path_to_environment_csv, object_column, mi
         obj_data = data[data[object_column] == obj]
         print(obj_data.success.value_counts())
         success_data = obj_data[obj_data.success == True]
+        #success_data = success_data.loc[success_data['t_y'] <= 1.5]
         failed_data = obj_data[obj_data.success == False]
         print(success_data.bodyPartsUsed.value_counts())
 
@@ -63,21 +64,27 @@ def generate_costmaps_for_environment(path_to_environment_csv, object_column, mi
         rv = multivariate_normal(mu, cov)
         Z = rv.pdf(pos)
         print('Max Success:{}, {}'.format(success_data.t_x.mean(), success_data.t_y.mean()))
+        print('MEAN:{}'.format(mu))
+        print('VARIANCE:{}'.format(cov))
 
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot_surface(X, Y, Z, rstride=5, cstride=5,cmap='viridis', antialiased=True)
+        #ax = fig.add_subplot(111, projection='3d')
+        ax = fig.add_subplot(111)
+        #ax.contour(X, Y, Z, rstride=5, cstride=5,cmap='viridis', antialiased=True)
+        ax.contour(X, Y, Z, cmap='viridis')
         ax.set_xlabel('x')
         ax.set_ylabel('y')
-        ax.set_zlabel('z')
+        #ax.set_zlabel('z')
         plt.title('{}'.format(obj))
         fig.show()
 
 
 if __name__ == "__main__":
 
-    generate_costmaps_for_environment('result/environment.csv', 'information')
-    generate_costmaps_for_environment('result/grasping.csv', 'object_acted_on')
+    #generate_costmaps_for_environment('result/environment_bowl.csv', 'information')
+    generate_costmaps_for_environment('result/dish_2.csv', 'type')
+    #generate_costmaps_for_environment('result/grasping_unreal.csv', 'object_acted_on')
+    #generate_costmaps_for_environment('result/placing_bowl.csv', 'object_acted_on')
     # # args = sys.argv[1:]
     # # path = args[0]
     # # result_dir_path = args[1]
